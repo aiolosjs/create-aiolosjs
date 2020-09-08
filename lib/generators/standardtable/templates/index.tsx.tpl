@@ -1,47 +1,60 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Button, Card, Modal, Popconfirm, Row, Col, Tooltip, Drawer } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import React, { useEffect, <% if(fCreate || fUpdate || fQueryDetail) { %>useState,<% } %> useRef } from 'react';
+import { <% if(fCreate) { %>Button,<% } %> Card, <% if(fCreate || fUpdate) { %>Modal,<% } %> <% if(fDelete) { %>Popconfirm,<% } %> <% if(fDelete || fUpdate || fQueryDetail) { %>Row, Col,<% } %> <% if(fDelete || fUpdate) { %>Tooltip,<% } %> <% if(fQueryDetail) { %>Drawer<% } %> } from 'antd';
+<% if(fCreate || fUpdate || fDelete) { %>
+import { <% if(fUpdate) { %>EditOutlined,<% } %> <% if(fDelete) { %>DeleteOutlined,<% } %> <% if(fCreate) { %>PlusOutlined<% } %> } from '@ant-design/icons';
+<% } %>
 
-import AuthBlock from '@/components/AuthBlock';
 import { useSelector, useDispatch } from 'umi';
 import { useQueryFormParams } from '@/utils/hooks';
 import SearchForms from '@/components/SearchForm';
 import TableList from '@/components/TableList';
-import { formaterObjectValue, formItemAddInitValue } from '@/utils/utils';
+import { formaterObjectValue, <% if(fCreate || fUpdate) { %>formItemAddInitValue<% } %> } from '@/utils/utils';
+<% if(fCreate || fUpdate) { %>
 import { RenderFormItemProps } from '@/core/common/renderFormItem';
+<% } %>
 
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { <%= firstUpperCaseProjectName%>DataProps } from './model';
+<% if(fCreate || fUpdate) { %>
 import DetailFormInfo, { ModelRef } from './ModalDetailForm';
-import DetailInfo from './Detail';
+<% } %>
 
-import { OperatorKeys, OperatorType, IRootState } from './interface';
+<% if(fQueryDetail) { %>
+import DetailInfo from './Detail';
+<% } %>
+
+import { OperatorKeys, <% if(fCreate || fUpdate) { %>OperatorType,<% } %> IRootState } from './interface';
 
 import pageConfig from './pageConfig';
 
+<% if(fCreate || fUpdate) { %>
 const operatorTypeDic: OperatorType = {
-  create: '新建用户',
-  update: '修改用户',
+ <% if(fCreate) { %> create: '新建用户',<% } %>
+ <% if(fUpdate) { %> update: '修改用户',<% } %>
 };
+<%}%>
 
 export default (): React.ReactNode => {
   const dispatch = useDispatch();
   const { <%= lowerCaseProjectName%>, loading } = useSelector((state: IRootState) => state);
-  const { modalVisible, confirmLoading } = <%= lowerCaseProjectName%>;
-
-  const [payload, { setQuery, setPagination, setFormAdd, setFormUpdate }] = useQueryFormParams();
+  const [payload, { setQuery, setPagination, <% if(fCreate || fUpdate) { %>setFormAdd,<% } %>  <% if(fUpdate || fDelete) { %>setFormUpdate,<% } %> }] = useQueryFormParams();
   const modelReduceType = useRef<OperatorKeys>('fetch');
-  const detailFormRef = useRef<ModelRef | null>(null);
-
-  const { searchForms = [], tableColumns = [], detailFormItems = [] } = pageConfig<
+  const { searchForms = [], tableColumns = [],  <% if(fCreate || fUpdate) { %>detailFormItems = []<% } %> } = pageConfig<
     <%= firstUpperCaseProjectName%>DataProps
   >();
-
+  <% if(fCreate || fUpdate) { %>
+  const { modalVisible, confirmLoading } = <%= lowerCaseProjectName%>;
+  const detailFormRef = useRef<ModelRef | null>(null);
   const [modalTitle, setModalTitle] = useState<string | undefined>();
-  const [currentItem, setCurrentItem] = useState<<%= firstUpperCaseProjectName%>DataProps | {}>({});
+  const [<% if(fQueryDetail) { %>currentItem<% } %>, setCurrentItem] = useState<<%= firstUpperCaseProjectName%>DataProps | {}>({});
   const [modalType, setModalType] = useState<OperatorKeys>();
   const [formItems, setFormItems] = useState<RenderFormItemProps[]>([]);
+
+  <% } %>
+
+  <% if(fQueryDetail) { %>
   const [drawerVisible, setDrawerVisible] = useState(false);
+  <% } %>
 
   useEffect(() => {
     dispatch({
@@ -50,6 +63,8 @@ export default (): React.ReactNode => {
     });
   }, [payload]);
 
+  
+  <% if(fCreate || fUpdate) { %>
   const updateFormItems = (record = {}) => {
     const newFormItems = formItemAddInitValue([...detailFormItems], record);
     setFormItems([...newFormItems]);
@@ -63,6 +78,9 @@ export default (): React.ReactNode => {
       },
     });
   };
+  <% } %>
+
+  <% if(fCreate || fUpdate) { %>
 
   const showModalVisibel = (type: OperatorKeys, record: <%= firstUpperCaseProjectName%>DataProps | {}) => {
     updateFormItems(record);
@@ -77,6 +95,10 @@ export default (): React.ReactNode => {
     setCurrentItem({});
   };
 
+  <% } %>
+
+  
+  <% if(fQueryDetail) { %>
   const showDrawer = (record: <%= firstUpperCaseProjectName%>DataProps | {}) => {
     setDrawerVisible(true);
     setCurrentItem(record);
@@ -85,24 +107,32 @@ export default (): React.ReactNode => {
   const hideDrawer = () => {
     setDrawerVisible(false);
   };
+  <% } %>
 
+  <% if(fDelete) { %>
   const deleteTableRowHandle = (id: number) => {
     modelReduceType.current = 'remove';
+
     setFormUpdate({ id });
   };
+  <% } %>
 
+  <% if(fCreate || fUpdate) { %>
   const modalOkHandle = async () => {
     const fieldsValue = await detailFormRef.current?.form?.validateFields();
 
     const fields = formaterObjectValue(fieldsValue);
+    
+
     if (modalType === 'create') {
       modelReduceType.current = 'create';
       setFormAdd(fields);
-    } else if (modalType === 'update') {
+    } <% if(fUpdate) { %>else if (modalType === 'update') {
       modelReduceType.current = 'update';
       setFormUpdate(fields);
-    }
+    }<% } %>
   };
+  <% } %>
 
   const renderSearchForm = () => {
     function onSubmit(queryValues: any) {
@@ -119,6 +149,7 @@ export default (): React.ReactNode => {
     return <SearchForms formItems={searchForms} onSubmit={onSubmit} onReset={onReset} />;
   };
 
+  <% if(fDelete || fUpdate || fQueryDetail) { %>
   const extraTableColumnRender = () => {
     return [
       {
@@ -129,6 +160,7 @@ export default (): React.ReactNode => {
           return (
             <div>
               <Row>
+               <% if(fUpdate) { %> 
                 <Col span={12}>
                   <Tooltip title="编辑">
                     <a
@@ -140,6 +172,9 @@ export default (): React.ReactNode => {
                     </a>
                   </Tooltip>
                 </Col>
+                <% } %>
+
+                <% if(fDelete) { %> 
                 <Col span={12}>
                   <Popconfirm
                     title="确定删除吗？"
@@ -155,9 +190,13 @@ export default (): React.ReactNode => {
                     </Tooltip>
                   </Popconfirm>
                 </Col>
+                <% } %>
+
+                <% if(fQueryDetail) { %> 
                 <Col span={24}>
                   <a onClick={() => showDrawer(record)}>查看详情</a>
                 </Col>
+                <% } %>
               </Row>
             </div>
           );
@@ -165,13 +204,14 @@ export default (): React.ReactNode => {
       },
     ];
   };
+  <% } %>
 
   const renderTableList = () => {
     const tableLoading = loading.models.<%= lowerCaseProjectName%>;
     const {
       tableData: { list, pagination },
     } = <%= lowerCaseProjectName%>;
-    const newTableColumns = [...tableColumns, ...extraTableColumnRender()];
+    const newTableColumns = [...tableColumns, <% if(fDelete || fUpdate || fQueryDetail) { %>...extraTableColumnRender()<% } %>];
 
     function onChange(current: number, pageSize?: number) {
       modelReduceType.current = 'fetch';
@@ -194,7 +234,8 @@ export default (): React.ReactNode => {
       <Card bordered={false}>
         <div className="tableList">
           <div className="tableList-searchform">{renderSearchForm()}</div>
-          <div className="tableList-operator">
+          <% if(fCreate) { %> 
+           <div className="tableList-operator">
             <Button
               icon={<PlusOutlined />}
               type="primary"
@@ -203,9 +244,13 @@ export default (): React.ReactNode => {
               新建
             </Button>
           </div>
+          <% } %>
+         
           {renderTableList()}
         </div>
       </Card>
+
+      <% if(fCreate || fUpdate) { %>
       <Modal
         title={modalTitle}
         destroyOnClose
@@ -216,6 +261,9 @@ export default (): React.ReactNode => {
       >
         <DetailFormInfo ref={detailFormRef} formItems={formItems} />
       </Modal>
+      <% } %>
+
+      <% if(fQueryDetail) { %>
       <Drawer
         destroyOnClose
         title="详情"
@@ -230,6 +278,7 @@ export default (): React.ReactNode => {
       >
         <DetailInfo currentItem={currentItem} />
       </Drawer>
+      <% } %>
     </PageHeaderWrapper>
   );
 };

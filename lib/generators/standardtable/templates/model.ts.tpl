@@ -1,8 +1,12 @@
+<% if(fCreate || fUpdate || fDelete) { %>
 import { message } from 'antd';
+<% } %>
 import { Reducer, Effect } from 'umi';
-import { query, create, update, remove, queryPost } from '@/services/api';
+import { <% if(fQueryDetail) { %>query,<% } %> create,<% if(fUpdate) { %> update,<% } %> <% if(fDelete) { %>remove, <% } %> queryPost } from '@/services/api';
 import { ITableData } from '@/utils/types';
+<% if(fCreate || fUpdate ) { %>
 import { delay } from '@/utils/utils';
+<% } %>
 
 export interface <%= firstUpperCaseProjectName%>DataProps {
   id: number;
@@ -13,9 +17,13 @@ export interface <%= firstUpperCaseProjectName%>DataProps {
 
 export interface <%= firstUpperCaseProjectName%>State {
   tableData: ITableData<<%= firstUpperCaseProjectName%>DataProps>;
+  <% if(fCreate || fUpdate) { %>
   modalVisible?: boolean;
   confirmLoading?: boolean;
+  <% } %>
+  <% if(fQueryDetail) { %>
   detailInfo: Partial<<%= firstUpperCaseProjectName%>DataProps>;
+  <% } %>
 }
 
 export interface <%= firstUpperCaseProjectName%>ModelType {
@@ -23,29 +31,44 @@ export interface <%= firstUpperCaseProjectName%>ModelType {
   state: <%= firstUpperCaseProjectName%>State;
   effects: {
     fetch: Effect;
+    <% if(fCreate) { %>
     create: Effect;
+    <% } %>
+    <% if(fUpdate) { %>
     update: Effect;
+    <% } %>
+    <% if(fDelete) { %>
     remove: Effect;
+    <% } %>
+    <% if(fQueryDetail) { %>
     fetchDetailInfo: Effect;
+    <% } %>
   };
   reducers: {
+    <% if(fCreate || fUpdate) { %>
     modalVisible: Reducer<<%= firstUpperCaseProjectName%>State>;
     changgeConfirmLoading: Reducer<<%= firstUpperCaseProjectName%>State>;
+    <% } %>
     save: Reducer<<%= firstUpperCaseProjectName%>State>;
     clear: Reducer<<%= firstUpperCaseProjectName%>State>;
   };
 }
 
-const <%= projectName%>ModelType: <%= firstUpperCaseProjectName%>ModelType = {
+const <%= firstLowerCaseProjectName%>Model %>: <%= firstUpperCaseProjectName%>ModelType = {
   namespace: '<%= lowerCaseProjectName%>',
   state: {
     tableData: {
       list: [],
       pagination: {},
     },
+    <% if(fCreate || fUpdate) { %>
     modalVisible: false,
     confirmLoading: false,
+    <% } %>
+
+    <% if(fQueryDetail) { %>
     detailInfo: {},
+    <% } %>
   },
   effects: {
     *fetch({ payload }, { call, put }) {
@@ -62,6 +85,7 @@ const <%= projectName%>ModelType: <%= firstUpperCaseProjectName%>ModelType = {
         }
       }
     },
+    <% if(fUpdate) { %>
     *update({ payload }, { call, put }) {
       yield put({
         type: 'changgeConfirmLoading',
@@ -96,7 +120,9 @@ const <%= projectName%>ModelType: <%= firstUpperCaseProjectName%>ModelType = {
         }
       }
     },
+    <% } %>
 
+    <% if(fCreate) { %>
     *create({ payload }, { call, put }) {
       yield put({
         type: 'changgeConfirmLoading',
@@ -131,6 +157,8 @@ const <%= projectName%>ModelType: <%= firstUpperCaseProjectName%>ModelType = {
         }
       }
     },
+    <% } %>
+    <% if(fDelete) { %>
     *remove({ payload }, { call, put }) {
       const response = yield call(remove, payload, '/sys/standardtable/delete');
       if (response) {
@@ -146,6 +174,8 @@ const <%= projectName%>ModelType: <%= firstUpperCaseProjectName%>ModelType = {
         }
       }
     },
+    <% } %>
+    <% if(fQueryDetail) { %>
     *fetchDetailInfo({ payload }, { call, put }) {
       const response = yield call(query, payload, '/sys/standardtable/detail');
       if (response) {
@@ -160,8 +190,10 @@ const <%= projectName%>ModelType: <%= firstUpperCaseProjectName%>ModelType = {
         }
       }
     },
+    <% } %>
   },
   reducers: {
+    <% if(fCreate || fUpdate) { %>
     modalVisible(state, { payload }) {
       return {
         ...state,
@@ -174,6 +206,7 @@ const <%= projectName%>ModelType: <%= firstUpperCaseProjectName%>ModelType = {
         ...payload,
       };
     },
+    <% } %>
     save(state, { payload }) {
       return {
         ...state,
@@ -191,4 +224,4 @@ const <%= projectName%>ModelType: <%= firstUpperCaseProjectName%>ModelType = {
   },
 };
 
-export default <%= firstUpperCaseProjectName%>ModelType;
+export default <%= firstLowerCaseProjectName%>Model %>;

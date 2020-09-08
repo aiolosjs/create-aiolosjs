@@ -22,7 +22,16 @@ $ yarn create aiolosjs
   aiolosjs-pro    - 创建一个aiolosjs pro 模板, 基于antd pro.
 ❯ standardtable   - 创建一个标准table.
 
-? 是否使用typescript? (y/N)
+? 请选择模板类型 standardtable
+? 请输入菜单名称-中文 testTable
+? 请输入菜单名称-英文 测试
+   create 测试/Detail.tsx
+   create 测试/index.tsx
+   create 测试/interface.ts
+   create 测试/ModalDetailForm.tsx
+   create 测试/model.ts
+   create 测试/pageConfig.tsx
+✨ 文件创建成功
 
 ```
 
