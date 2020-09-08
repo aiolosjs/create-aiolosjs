@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test aiolosjs-create test generate aiolosjs pro project from github 1`] = `
+"? 请选择模板类型 (Use arrow keys)
+❯ ant-design-pro  - 创建一个aiolosjs pro 模板,基于antd pro. 
+  app             - Create project with a simple boilerplate, support typescript
+. 
+  block           - Create a umi block. 
+  library         - Create a library with umi. 
+  plugin          - Create a umi plugin. [41D[41C[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G? 请选择模板类型 ant-design-pro[31D[31C
+? 🧙 AiolisJs Pro (Use arrow keys)
+❯ Pro V1 [9D[9C[2K[1A[2K[G? 🧙 AiolisJs Pro Pro V1[24D[24C
+? 🤓 您想使用哪种语言? (Use arrow keys)
+❯ TypeScript 
+  JavaScript [13D[13C[2K[1A[2K[1A[2K[G? 🤓 您想使用哪种语言? 
+  TypeScript 
+❯ JavaScript [13D[13C[2K[1A[2K[1A[2K[G? 🤓 您想使用哪种语言? JavaScript[33D[33C
+❯ 🚚 clone success
+❯ [Sylvanas] Prepare js environment...
+❯ [JS] Clean up...
+✨ File Generate Done
+"
+`;
