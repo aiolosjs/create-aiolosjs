@@ -2,7 +2,7 @@
 import { message } from 'antd';
 <% } %>
 import { Reducer, Effect } from 'umi';
-import { <% if(fQueryDetail) { %>query,<% } %> <% if(fCreate) { %>create,<% } %> <% if(fUpdate) { %> update,<% } %> <% if(fDelete) { %>remove, <% } %> queryPost } from '@/services/api';
+import { queryGet, <% if(fCreate) { %>createPost,<% } %> <% if(fUpdate) { %> updatePut,<% } %> <% if(fDelete) { %>remove, <% } %>  } from '@/services/api';
 import { ITableData } from '@/utils/types';
 <% if(fCreate || fUpdate ) { %>
 import { delay } from '@/utils/utils';
@@ -72,14 +72,27 @@ const <%= firstLowerCaseProjectName%>Model %>: <%= firstUpperCaseProjectName%>Mo
   },
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryPost, payload, '/sys/standardtable/list');
+      const response = yield call(
+        queryGet,
+        { ...payload?.query, ...payload?.pagination },
+        '/api-user/v1/cms/user-staff',
+      );
+
       if (response) {
-        const { code, body } = response;
-        if (code === 200) {
+       const { code, result } = response;
+        if (code === '0' && result) {
+          const { records = [], current = 1, total = 1, size = 50 } = result;
           yield put({
             type: 'save',
             payload: {
-              tableData: body,
+              tableData: {
+                list: records,
+                pagination: {
+                  current: current - 0,
+                  total,
+                  pageSize: size,
+                },
+              },
             },
           });
         }
@@ -94,7 +107,11 @@ const <%= firstLowerCaseProjectName%>Model %>: <%= firstUpperCaseProjectName%>Mo
         },
       });
       yield call(delay);
-      const response = yield call(update, payload, '/sys/standardtable/update');
+      const response = yield call(
+        updatePut,
+        {...payload?.form},
+        '/api-user/v1/cms/user-staff',
+      );
       yield put({
         type: 'changgeConfirmLoading',
         payload: {
@@ -102,20 +119,19 @@ const <%= firstLowerCaseProjectName%>Model %>: <%= firstUpperCaseProjectName%>Mo
         },
       });
       if (response) {
-        const { code, body } = response;
-        if (code === 200) {
+        const { code } = response;
+        if (code === '0') {
           yield put({
             type: 'modalVisible',
             payload: {
               modalVisible: false,
             },
           });
-          yield put({
-            type: 'save',
-            payload: {
-              tableData: body,
-            },
+          yield put.resolve({
+            type: 'fetch',
+            payload,
           });
+
           message.success('修改成功');
         }
       }
@@ -131,7 +147,11 @@ const <%= firstLowerCaseProjectName%>Model %>: <%= firstUpperCaseProjectName%>Mo
         },
       });
       yield call(delay);
-      const response = yield call(create, payload, '/sys/standardtable/add');
+      const response = yield call(
+        createPost,
+        {...payload?.form},
+        '/api-user/v1/cms/user-staff',
+      );
       yield put({
         type: 'changgeConfirmLoading',
         payload: {
@@ -139,20 +159,19 @@ const <%= firstLowerCaseProjectName%>Model %>: <%= firstUpperCaseProjectName%>Mo
         },
       });
       if (response) {
-        const { code, body } = response;
-        if (code === 200) {
+        const { code } = response;
+        if (code === '0') {
           yield put({
             type: 'modalVisible',
             payload: {
               modalVisible: false,
             },
           });
-          yield put({
-            type: 'save',
-            payload: {
-              tableData: body,
-            },
+          yield put.resolve({
+            type: 'fetch',
+            payload,
           });
+
           message.success('添加成功');
         }
       }
@@ -160,16 +179,20 @@ const <%= firstLowerCaseProjectName%>Model %>: <%= firstUpperCaseProjectName%>Mo
     <% } %>
     <% if(fDelete) { %>
     *remove({ payload }, { call, put }) {
-      const response = yield call(remove, payload, '/sys/standardtable/delete');
+      const response = yield call(
+        updatePut,
+        {...payload?.form},
+        '/api-user/v1/cms/user-staff',
+      );
       if (response) {
-        const { code, body } = response;
-        if (code === 200) {
-          yield put({
-            type: 'save',
-            payload: {
-              tableData: body,
-            },
+        const { code } = response;
+        if (code === '0') {
+          
+          yield put.resolve({
+            type: 'fetch',
+            payload,
           });
+
           message.success('删除成功');
         }
       }
@@ -177,14 +200,14 @@ const <%= firstLowerCaseProjectName%>Model %>: <%= firstUpperCaseProjectName%>Mo
     <% } %>
     <% if(fQueryDetail) { %>
     *fetchDetailInfo({ payload }, { call, put }) {
-      const response = yield call(query, payload, '/sys/standardtable/detail');
+      const response = yield call(queryGet, payload, '/sys/standardtable/detail');
       if (response) {
-        const { code, body } = response;
-        if (code === 200) {
+        const { code, result } = response;
+        if (code === '0' && result) {
           yield put({
             type: 'save',
             payload: {
-              detailInfo: body,
+              detailInfo: result,
             },
           });
         }

@@ -7,7 +7,7 @@ import { <% if(fUpdate) { %>EditOutlined,<% } %> <% if(fDelete) { %>DeleteOutlin
 // @ts-ignore
 import clonedeep from 'lodash.clonedeep';
 import { useSelector, useDispatch } from 'umi';
-import { useQueryFormParams } from '@/utils/hooks';
+import { useQueryFormParams,useCalcTableBodyMaxHeight } from '@/utils/hooks';
 import SearchForms from '@/components/SearchForm';
 import TableList from '@/components/TableList';
 import { formaterObjectValue, <% if(fCreate || fUpdate) { %>formItemAddInitValue<% } %> } from '@/utils/utils';
@@ -15,7 +15,6 @@ import { formaterObjectValue, <% if(fCreate || fUpdate) { %>formItemAddInitValue
 import { RenderFormItemProps } from '@/core/common/renderFormItem';
 <% } %>
 
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { <%= firstUpperCaseProjectName%>DataProps } from './model';
 <% if(fCreate || fUpdate) { %>
 import DetailFormInfo, { ModelRef } from './ModalDetailForm';
@@ -217,7 +216,7 @@ export default (): React.ReactNode => {
 
     function onChange(current: number, pageSize?: number) {
       modelReduceType.current = 'fetch';
-      setPagination({ current, pageSize });
+      setPagination({ page: current, perPage: pageSize });
     }
 
     return (
@@ -227,17 +226,27 @@ export default (): React.ReactNode => {
         columns={newTableColumns}
         dataSource={list}
         pagination={{ pageSize: 10, onChange, ...pagination }}
+        size="middle"
+        scroll={{ y: useCalcTableBodyMaxHeight("<%= firstLowerCaseProjectName %>") }}
       />
     );
   };
 
   return (
-    <PageHeaderWrapper title={false}>
-      <Card bordered={false}>
-        <div className="tableList">
+    <>
+      <Card bordered={false} id="<%= firstLowerCaseProjectName %>">
+        <div 
+          className="tableList" 
+          style={{
+            height: 'calc(100vh - 120px)',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
           <div className="tableList-searchform">{renderSearchForm()}</div>
           <% if(fCreate) { %> 
-           <div className="tableList-operator">
+           <div className="tableList-operator" style={{ paddingBottom: 10 }} >
             <Button
               icon={<PlusOutlined />}
               type="primary"
@@ -281,6 +290,6 @@ export default (): React.ReactNode => {
         <DetailInfo currentItem={currentItem} />
       </Drawer>
       <% } %>
-    </PageHeaderWrapper>
+    </>
   );
 };
