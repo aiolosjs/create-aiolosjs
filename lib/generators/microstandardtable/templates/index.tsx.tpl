@@ -238,7 +238,7 @@ export default (): React.ReactNode => {
         <div 
           className="tableList" 
           style={{
-            height: 'calc(100vh - 120px)',
+            height: 'calc(100vh - 146px)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',

@@ -80,8 +80,13 @@ const <%= firstLowerCaseProjectName%>Model %>: <%= firstUpperCaseProjectName%>Mo
 
       if (response) {
        const { code, result } = response;
-        if (code === '0' && result) {
-          const { records = [], current = 1, total = 1, size = 50 } = result;
+        if (code === '0') {
+          const { records = [], current = 1, total = 1, size = 50 } = result ?? {
+            records: [],
+            current: 1,
+            total: 0,
+            size: 10,
+          };
           yield put({
             type: 'save',
             payload: {
