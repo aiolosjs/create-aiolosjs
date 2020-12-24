@@ -1,6 +1,6 @@
 {
   "name": "create-aiolosjs",
-  "version": "0.2.1",
+  "version": "0.2.0",
   "description": "通过命令创建应用",
   "homepage": "https://github.com/aiolosjs/create-aiolosjs.git",
   "bugs": {

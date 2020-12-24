@@ -4,18 +4,18 @@
 
 ## Usage
 
-``` bash
+```bash
 $ yarn create aiolosjs [appName]
 ```
 
 ## Boilerplates
 
-* `aiolosjs-pro` - 创建一个aiolosjs pro 模板, 基于antd pro.
-* `standardtable ` - 创建一个标准table.
+- `aiolosjs-pro` - 创建一个 aiolosjs pro 模板, 基于 antd pro.
+- `standardtable` - 创建一个标准 table.
 
 ## Usage Example
 
-``` bash
+```bash
 $ yarn create aiolosjs
 
 ? 请选择模板类型  (使用上下按键)
@@ -43,20 +43,20 @@ $ yarn create aiolosjs
 
 先执行 `yarn global bin` 拿到路径，然后添加到 PATH 环境变量里。
 
-``` bash
+```bash
 $ yarn global bin
 /usr/local/bin
 ```
 
 你也可以尝试用 npm，
 
-``` bash
+```bash
 $ npm create aiolosjs
 ```
 
 或者手动安装 create-aiolosjs，并执行他，
 
-``` bash
+```bash
 $ npm install create-aiolosjs -g
 $ create-aiolosjs
 ```
