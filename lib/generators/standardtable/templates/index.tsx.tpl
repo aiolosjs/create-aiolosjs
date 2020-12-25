@@ -5,7 +5,7 @@ import { <% if(fUpdate) { %>EditOutlined,<% } %> <% if(fDelete) { %>DeleteOutlin
 <% } %>
 
 // @ts-ignore
-import clonedeep from 'lodash.clonedeep';
+import clonedeep from 'lodash/cloneDeep';
 import { useSelector, useDispatch } from 'umi';
 import { useQueryFormParams } from '@/utils/hooks';
 import SearchForms from '@/components/SearchForm';
